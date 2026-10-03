@@ -24,6 +24,17 @@ npm run build
 La aplicación se abre en `http://localhost:3000`. La salud está disponible en `/api/health` y el CRUD
 de notas en `/api/data/note`.
 
+## Acceso local
+
+En desarrollo, abre `/register` para crear la primera cuenta. Esa cuenta obtiene el rol `admin`; las
+siguientes quedan como `viewer`. El registro se deshabilita en producción. Las cuentas se guardan en
+`data/user.json` y las contraseñas se almacenan como hashes bcrypt. La colección de usuarios no está
+expuesta por el CRUD genérico.
+
+Las sesiones usan una cookie httpOnly con expiración de 24 horas. En desarrollo se usa una clave local
+de conveniencia; antes de desplegar, define un `AUTH_SECRET` aleatorio de al menos 32 caracteres. La
+persistencia JSON actual es local y no admite escrituras en producción.
+
 ## Arquitectura
 
 - `src/app`: App Router, página principal y endpoints.

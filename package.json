@@ -14,7 +14,9 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "framer-motion": "^12.23.12",
+    "jose": "^6.2.12",
     "next": "^15.5.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

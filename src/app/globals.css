@@ -14,6 +14,7 @@ button { cursor: pointer; }
 .brand { align-items: center; display: flex; font-size: 19px; font-weight: 800; gap: 10px; letter-spacing: -.06em; }
 .brand-mark { align-items: center; background: var(--deep); border-radius: 10px; color: var(--lime); display: flex; font-family: 'DM Mono', monospace; font-size: 15px; height: 32px; justify-content: center; width: 32px; }
 .topbar-meta { align-items: center; color: var(--muted); display: flex; font-family: 'DM Mono', monospace; font-size: 11px; gap: 9px; text-transform: uppercase; }
+.logout-button { background: transparent; border: 1px solid var(--line); border-radius: 2px; color: var(--deep); font: inherit; padding: 8px 10px; text-transform: none; }
 .status-dot { background: #7ab844; border-radius: 50%; display: inline-block; height: 7px; width: 7px; }
 .avatar { align-items: center; background: #e3eadf; border-radius: 50%; color: var(--deep); display: flex; font-size: 10px; height: 30px; justify-content: center; margin-left: 12px; width: 30px; }
 .hero { align-items: flex-end; display: flex; justify-content: space-between; padding-bottom: 105px; padding-top: 120px; }
@@ -49,4 +50,23 @@ time { color: #9aa79e; font-family: 'DM Mono', monospace; font-size: 9px; }
 .note-item h3 { font-size: 15px; margin: 18px 0 8px; }.note-item p { color: var(--muted); font-size: 12px; line-height: 1.55; margin: 0; }
 .empty-state { align-items: center; border: 1px dashed #cbd7c9; display: flex; flex-direction: column; justify-content: center; min-height: 220px; text-align: center; }.empty-state span { color: var(--coral); font-size: 24px; }.empty-state p { font-size: 14px; margin: 12px 0 5px; }.empty-state small { color: var(--muted); font-size: 11px; }
 footer { border-top: 1px solid var(--line); color: #94a198; display: flex; font-family: 'DM Mono', monospace; font-size: 9px; justify-content: space-between; letter-spacing: .08em; padding-bottom: 30px; padding-top: 22px; }
+.auth-layout { background: var(--paper); min-height: 100vh; overflow: hidden; padding: 28px max(24px, calc((100vw - 1180px) / 2)); position: relative; }
+.auth-layout::before { background: repeating-linear-gradient(135deg, rgba(38,60,48,.035) 0, rgba(38,60,48,.035) 1px, transparent 1px, transparent 11px); content: ''; inset: 0 0 0 58%; pointer-events: none; position: absolute; }
+.auth-topbar { align-items: center; display: flex; justify-content: space-between; position: relative; z-index: 1; }
+.auth-topbar .brand { color: var(--ink); text-decoration: none; }
+.auth-context { color: var(--muted); font: 10px 'DM Mono', monospace; }
+.auth-content { align-items: center; display: grid; gap: 80px; grid-template-columns: minmax(0, 1fr) minmax(320px, 390px); margin: 0 auto; max-width: 1020px; min-height: calc(100vh - 100px); position: relative; z-index: 1; }
+.auth-intro h1 { font-size: clamp(44px, 6vw, 72px); letter-spacing: -.06em; line-height: 1.02; margin: 0; }
+.auth-intro h1 em { color: #718d4d; font-style: normal; }
+.auth-panel { background: white; border: 1px solid var(--line); border-radius: 3px; padding: 32px; }
+.auth-panel .eyebrow { margin-bottom: 12px; }
+.auth-panel h2 { font-size: 24px; letter-spacing: -.04em; margin: 0 0 25px; }
+.auth-form { display: flex; flex-direction: column; gap: 17px; }
+.auth-form button { background: var(--deep); border: 0; border-radius: 2px; color: white; font-size: 12px; font-weight: 700; margin-top: 4px; padding: 13px; }
+.auth-form button:disabled { opacity: .6; }
+.auth-hint { color: var(--muted); font-size: 11px; margin-top: -12px; }
+.auth-error { color: #a34431; font-size: 12px; line-height: 1.5; margin: 0; }
+.auth-switch { color: var(--muted); font-size: 12px; margin: 23px 0 0; }
+.auth-switch a { color: var(--deep); font-weight: 700; }
 @media (max-width: 720px) { .topbar, .hero, .workspace, footer { padding-left: 20px; padding-right: 20px; } .topbar-meta { font-size: 0; }.hero { align-items: start; flex-direction: column; gap: 34px; padding-bottom: 70px; padding-top: 90px; }.health-card { width: 100%; }.workspace-grid { grid-template-columns: 1fr; }.notes-list { grid-template-columns: 1fr; } footer { flex-direction: column; gap: 10px; } }
+@media (max-width: 720px) { .auth-layout { padding: 20px; }.auth-context { font-size: 8px; }.auth-content { align-content: center; gap: 30px; grid-template-columns: 1fr; padding: 42px 0; }.auth-intro h1 { font-size: 44px; }.auth-panel { padding: 24px; } }

@@ -44,6 +44,11 @@ export default function HomePage() {
     setIsSaving(false);
   }
 
+  async function logOut() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    window.location.assign('/login');
+  }
+
   const visibleNotes = category === 'todas' ? notes : notes.filter((note) => note.category === category);
 
   return (
@@ -52,7 +57,7 @@ export default function HomePage() {
       <div className="ambient ambient-two" />
       <header className="topbar">
         <div className="brand"><span className="brand-mark">M</span><span>medifis</span></div>
-        <div className="topbar-meta"><span className="status-dot" /> Sistema operativo <span className="avatar">JC</span></div>
+        <div className="topbar-meta"><span className="status-dot" /> Sistema operativo <button className="logout-button" type="button" onClick={logOut}>Cerrar sesión</button></div>
       </header>
 
       <section className="hero">
