@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { query } from '@/lib/json-db';
-import { verifyPassword } from '@/lib/auth/hash';
-import { createSessionToken, sessionCookieName, sessionCookieOptions } from '@/lib/auth/session';
-import { ensureUserCollection } from '@/lib/auth/users';
-import type { UserRecord } from '@data/_schema/user.schema';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 const loginSchema = z.object({
   email: z.string().trim().email().transform((email) => email.toLowerCase()),
@@ -25,25 +21,27 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   try {
-    await ensureUserCollection();
-    const [user] = await query<UserRecord>('user', (record) => record.email === parsed.data.email && record.active);
-    if (!user || !(await verifyPassword(parsed.data.password, user.passwordHash))) {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
+    if (error || !data.user) {
       return NextResponse.json({ success: false, error: 'Correo o contraseña incorrectos.' }, { status: 401 });
     }
 
-    const token = await createSessionToken({
-      id: user.id,
-      email: user.email,
-      displayName: user.displayName,
-      role: user.role,
-    });
-    const response = NextResponse.json({
+    const { data: profile, error: profileError } = await supabase
+      .from('users')
+      .select('id, email, display_name, role')
+      .eq('id', data.user.id)
+      .maybeSingle();
+
+    if (profileError || !profile) {
+      return NextResponse.json({ success: false, error: 'No se encontró el perfil. Aplica la migración de Supabase.' }, { status: 503 });
+    }
+
+    return NextResponse.json({
       success: true,
-      data: { id: user.id, email: user.email, displayName: user.displayName, role: user.role },
+      data: { id: profile.id, email: profile.email, displayName: profile.display_name, role: profile.role },
     });
-    response.cookies.set(sessionCookieName, token, sessionCookieOptions);
-    return response;
   } catch {
-    return NextResponse.json({ success: false, error: 'No se pudo iniciar sesión.' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Supabase no está configurado o no está disponible.' }, { status: 503 });
   }
 }

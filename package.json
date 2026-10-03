@@ -9,14 +9,15 @@
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "type-check": "tsc --noEmit",
+    "db:migrate:supabase": "node scripts/apply-supabase-migration.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.3",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.117.2",
     "framer-motion": "^12.23.12",
-    "jose": "^6.2.12",
     "next": "^15.5.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -32,6 +33,7 @@
     "eslint": "^9.36.0",
     "eslint-config-next": "^15.5.4",
     "jsdom": "^26.1.0",
+    "pg": "^8.23.1",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"

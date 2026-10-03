@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import type { CreateInput } from '@/lib/types';
-import { create, query } from '@/lib/json-db';
-import { hashPassword } from '@/lib/auth/hash';
-import { createSessionToken, sessionCookieName, sessionCookieOptions } from '@/lib/auth/session';
-import { ensureUserCollection } from '@/lib/auth/users';
-import type { UserRecord } from '@data/_schema/user.schema';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 const registerSchema = z.object({
   email: z.string().trim().email().transform((email) => email.toLowerCase()),
@@ -14,10 +9,6 @@ const registerSchema = z.object({
 });
 
 export async function POST(request: Request): Promise<NextResponse> {
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ success: false, error: 'El registro local está deshabilitado.' }, { status: 403 });
-  }
-
   let body: unknown;
   try {
     body = await request.json();
@@ -31,33 +22,28 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   try {
-    await ensureUserCollection();
-    const existingUsers = await query<UserRecord>('user', () => true);
-    if (existingUsers.some((user) => user.email === parsed.data.email)) {
-      return NextResponse.json({ success: false, error: 'No se pudo crear la cuenta con esos datos.' }, { status: 409 });
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.auth.signUp({
+      email: parsed.data.email,
+      password: parsed.data.password,
+      options: { data: { display_name: parsed.data.displayName } },
+    });
+
+    if (error || !data.user) {
+      return NextResponse.json({ success: false, error: 'No se pudo crear la cuenta. Comprueba si el correo ya está registrado.' }, { status: 400 });
     }
 
-    const user = await create<UserRecord>('user', {
-      email: parsed.data.email,
-      displayName: parsed.data.displayName,
-      passwordHash: await hashPassword(parsed.data.password),
-      role: existingUsers.length === 0 ? 'admin' : 'viewer',
-      active: true,
-    } as CreateInput<UserRecord>);
-
-    const token = await createSessionToken({
-      id: user.id,
-      email: user.email,
-      displayName: user.displayName,
-      role: user.role,
-    });
-    const response = NextResponse.json({
+    return NextResponse.json({
       success: true,
-      data: { id: user.id, email: user.email, displayName: user.displayName, role: user.role },
+      needsEmailConfirmation: !data.session,
+      data: {
+        id: data.user.id,
+        email: data.user.email,
+        displayName: parsed.data.displayName,
+        role: 'viewer',
+      },
     }, { status: 201 });
-    response.cookies.set(sessionCookieName, token, sessionCookieOptions);
-    return response;
   } catch {
-    return NextResponse.json({ success: false, error: 'No se pudo crear la cuenta.' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Supabase no está configurado o no está disponible.' }, { status: 503 });
   }
 }

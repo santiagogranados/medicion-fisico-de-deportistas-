@@ -1,16 +1,19 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 type Note = { id: string; title: string; content: string; category: string; pinned: boolean; updatedAt: string };
 type Health = { status: string; version: string; environment: string; uptime: number };
+type UserProfile = { id: string; displayName: string; role: string };
 
 const categories = ['general', 'importante', 'pendiente'] as const;
 
 export default function HomePage() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [health, setHealth] = useState<Health | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [category, setCategory] = useState<(typeof categories)[number] | 'todas'>('todas');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -18,11 +21,17 @@ export default function HomePage() {
   const [isSaving, setIsSaving] = useState(false);
 
   async function loadData() {
-    const [notesResponse, healthResponse] = await Promise.all([fetch('/api/data/note'), fetch('/api/health')]);
+    const [notesResponse, healthResponse, profileResponse] = await Promise.all([
+      fetch('/api/data/note'),
+      fetch('/api/health'),
+      fetch('/api/auth/me'),
+    ]);
     const notesBody = (await notesResponse.json()) as { data: Note[] };
     const healthBody = (await healthResponse.json()) as { data: Health };
+    const profileBody = (await profileResponse.json()) as { data?: UserProfile };
     setNotes(notesBody.data ?? []);
     setHealth(healthBody.data);
+    setProfile(profileBody.data ?? null);
   }
 
   useEffect(() => {
@@ -57,7 +66,7 @@ export default function HomePage() {
       <div className="ambient ambient-two" />
       <header className="topbar">
         <div className="brand"><span className="brand-mark">M</span><span>medifis</span></div>
-        <div className="topbar-meta"><span className="status-dot" /> Sistema operativo <button className="logout-button" type="button" onClick={logOut}>Cerrar sesión</button></div>
+        <nav className="topbar-meta" aria-label="Navegación principal"><span className="status-dot" /> Sistema operativo {profile?.role === 'admin' && <Link className="topbar-link" href="/users">Usuarios</Link>}<button className="logout-button" type="button" onClick={logOut}>Cerrar sesión</button></nav>
       </header>
 
       <section className="hero">

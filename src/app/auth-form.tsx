@@ -9,6 +9,7 @@ type AuthFormProps = { mode: 'login' | 'register' };
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isRegister = mode === 'register';
 
@@ -16,6 +17,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     event.preventDefault();
     if (isSubmitting) return;
     setError('');
+    setNotice('');
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
@@ -28,11 +30,16 @@ export function AuthForm({ mode }: AuthFormProps) {
         ...(isRegister ? { displayName: formData.get('displayName') } : {}),
       }),
     });
-    const result = (await response.json()) as { error?: string };
+    const result = (await response.json()) as { error?: string; needsEmailConfirmation?: boolean };
     setIsSubmitting(false);
 
     if (!response.ok) {
       setError(result.error ?? 'No se pudo completar la solicitud.');
+      return;
+    }
+
+    if (result.needsEmailConfirmation) {
+      setNotice('Cuenta creada. Confirma tu correo electrónico y luego inicia sesión.');
       return;
     }
 
@@ -54,7 +61,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         <section className="auth-intro">
           <p className="eyebrow">MEDIFIS · EQUIPO</p>
           <h1>{isRegister ? <>Un espacio<br /><em>para tu equipo.</em></> : <>Medir mejor.<br /><em>Entrenar con intención.</em></>}</h1>
-          <p className="hero-copy">{isRegister ? 'Crea la primera cuenta local para empezar.' : 'Acceso al espacio de seguimiento.'}</p>
+          <p className="hero-copy">{isRegister ? 'Crea tu cuenta para acceder al espacio de seguimiento.' : 'Acceso al espacio de seguimiento.'}</p>
         </section>
         <section className="auth-panel" aria-labelledby="auth-title">
           <p className="eyebrow">{isRegister ? 'NUEVA CUENTA' : 'INICIO DE SESIÓN'}</p>
@@ -67,6 +74,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             <label>Contraseña<input name="password" type="password" autoComplete={isRegister ? 'new-password' : 'current-password'} required minLength={isRegister ? 12 : 1} maxLength={128} /></label>
             {isRegister && <small className="auth-hint">Mínimo 12 caracteres.</small>}
             {error && <p className="auth-error" role="alert">{error}</p>}
+            {notice && <p className="auth-notice" role="status">{notice}</p>}
             <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Un momento...' : isRegister ? 'Crear cuenta' : 'Entrar'}</button>
           </form>
           <p className="auth-switch">

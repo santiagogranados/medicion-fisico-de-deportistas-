@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
-import { sessionCookieName, sessionCookieOptions } from '@/lib/auth/session';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export async function POST(): Promise<NextResponse> {
-  const response = NextResponse.json({ success: true });
-  response.cookies.set(sessionCookieName, '', { ...sessionCookieOptions, maxAge: 0 });
-  return response;
+  try {
+    const supabase = await createSupabaseServerClient();
+    await supabase.auth.signOut();
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ success: false, error: 'Supabase no está configurado o no está disponible.' }, { status: 503 });
+  }
 }

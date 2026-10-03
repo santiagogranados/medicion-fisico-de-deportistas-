@@ -24,16 +24,28 @@ npm run build
 La aplicación se abre en `http://localhost:3000`. La salud está disponible en `/api/health` y el CRUD
 de notas en `/api/data/note`.
 
-## Acceso local
+## Acceso y Supabase
 
-En desarrollo, abre `/register` para crear la primera cuenta. Esa cuenta obtiene el rol `admin`; las
-siguientes quedan como `viewer`. El registro se deshabilita en producción. Las cuentas se guardan en
-`data/user.json` y las contraseñas se almacenan como hashes bcrypt. La colección de usuarios no está
-expuesta por el CRUD genérico.
+El login usa Supabase Auth. Los perfiles se crean automáticamente en `public.users` al registrar una
+cuenta; las contraseñas permanecen en `auth.users`, gestionadas por Supabase. El primer registro
+obtiene el rol `admin` de forma transaccional; las cuentas siguientes empiezan como `viewer`.
 
-Las sesiones usan una cookie httpOnly con expiración de 24 horas. En desarrollo se usa una clave local
-de conveniencia; antes de desplegar, define un `AUTH_SECRET` aleatorio de al menos 32 caracteres. La
-persistencia JSON actual es local y no admite escrituras en producción.
+Los administradores tienen el menú **Usuarios** para crear cuentas y editar nombre, correo, rol y
+contraseña. Las operaciones administrativas usan `MEDIFIS_SUPABASE_SECRET_KEY` o
+`MEDIFIS_SUPABASE_SERVICE_ROLE_KEY`, exclusivamente en el servidor. Nunca expongas esas variables con
+el prefijo `NEXT_PUBLIC_`.
+
+Configura la URL y la clave publicable usando `NEXT_PUBLIC_SUPABASE_URL` y
+`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, o las variables equivalentes generadas por Vercel. Para aplicar
+la tabla al proyecto enlazado en `.env.local`, ejecuta `npm run db:migrate:supabase`; requiere
+`MEDIFIS_POSTGRES_URL_NON_POOLING` o `MEDIFIS_POSTGRES_URL`. Si Node no confía en el certificado TLS del
+proyecto, descarga su certificado CA desde la configuración de base de datos de Supabase y define
+`SUPABASE_DB_CA_CERT` con su ruta local. La verificación TLS permanece activa. El comando no imprime
+la URL ni la clave.
+
+La migración aplica RLS: cada usuario solo puede leer su perfil y actualizar su nombre. El registro
+público no permite autoconcederse privilegios; solo el primer registro y los administradores pueden
+asignar el rol `admin`.
 
 ## Arquitectura
 
