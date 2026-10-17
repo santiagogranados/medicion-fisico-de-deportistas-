@@ -66,7 +66,7 @@ export default function HomePage() {
       <div className="ambient ambient-two" />
       <header className="topbar">
         <div className="brand"><span className="brand-mark">M</span><span>medifis</span></div>
-        <nav className="topbar-meta" aria-label="Navegación principal"><span className="status-dot" /> Sistema operativo {profile?.role === 'admin' && <Link className="topbar-link" href="/users">Usuarios</Link>}<button className="logout-button" type="button" onClick={logOut}>Cerrar sesión</button></nav>
+        <nav className="topbar-meta" aria-label="Navegación principal"><span className="status-dot" /> Sistema operativo {profile?.role === 'admin' && <Link className="topbar-link" href="/users">Usuarios</Link>}<Link className="topbar-link" href="/account">Cambiar contraseña</Link><button className="logout-button" type="button" onClick={logOut}>Cerrar sesión</button></nav>
       </header>
 
       <section className="hero">

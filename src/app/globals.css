@@ -104,6 +104,9 @@ footer { border-top: 1px solid var(--line); color: #94a198; display: flex; font-
 .user-edit-row { align-items: end; grid-template-columns: repeat(4, minmax(130px, 1fr)) auto; }
 .user-row-actions { display: flex; gap: 8px; }
 .user-row-actions .user-cancel { background: white; }
+.account-page { max-width: 760px; }
+.account-form { max-width: 560px; }
+.account-form-grid { grid-template-columns: 1fr; }
 @media (max-width: 720px) { .topbar, .hero, .workspace, footer { padding-left: 20px; padding-right: 20px; } .topbar-meta { font-size: 0; }.hero { align-items: start; flex-direction: column; gap: 34px; padding-bottom: 70px; padding-top: 90px; }.health-card { width: 100%; }.workspace-grid { grid-template-columns: 1fr; }.notes-list { grid-template-columns: 1fr; } footer { flex-direction: column; gap: 10px; } }
 @media (max-width: 720px) { .auth-layout { padding: 20px; }.auth-context { font-size: 8px; }.auth-content { align-content: center; gap: 30px; grid-template-columns: 1fr; padding: 42px 0; }.auth-intro h1 { font-size: 44px; }.auth-panel { padding: 24px; } }
 @media (max-width: 720px) { .users-nav { gap: 10px; }.users-nav a, .users-nav span { font-size: 11px; }.users-nav .logout-button { font-size: 10px; padding: 7px; }.users-page { padding: 60px 20px 70px; }.user-create-form { padding: 19px; }.user-form-grid { grid-template-columns: 1fr; }.user-form-actions { align-items: flex-start; flex-direction: column; gap: 14px; }.user-row { align-items: start; gap: 11px; grid-template-columns: 1fr auto; }.user-role { grid-column: 1; }.user-row time { grid-column: 1; }.user-edit-button { grid-column: 2; grid-row: 1 / span 3; }.user-edit-row { grid-template-columns: 1fr; }.user-row-actions { justify-content: flex-end; } }

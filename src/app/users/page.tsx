@@ -101,6 +101,7 @@ export default function UsersPage() {
         <Link className="brand users-brand" href="/"><span className="brand-mark">M</span><span>medifis</span></Link>
         <nav className="users-nav" aria-label="Navegación principal">
           <Link href="/">Panel</Link>
+          <Link href="/account">Seguridad</Link>
           <span aria-current="page">Usuarios</span>
           <button className="logout-button" type="button" onClick={logOut}>Cerrar sesión</button>
         </nav>
