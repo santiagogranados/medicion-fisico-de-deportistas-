@@ -1,0 +1,15 @@
+export const POSICIONES = ['Portero', 'Defensa', 'Mediocampista', 'Extremo', 'Delantero'] as const;
+export const EDAD_MIN = 15;
+export const EDAD_MAX = 45;
+export const FC_MIN = 40;
+export const FC_MAX = 220;
+export const VEL_MEDIA_KMH = 25;
+export const VEL_ALTA_KMH = 30;
+export const DIST_MEDIA_M = 5000;
+export const DIST_ALTA_M = 8000;
+export const RECUP_RAPIDA_S = 60;
+export const RECUP_NORMAL_MAX_S = 120;
+export const FC_INTENSA = 160;
+export const FC_ALERTA_MAX = 180;
+export const ZONA_HORARIA = 'America/Bogota';
+export const LIMITE_LISTADO = 500;

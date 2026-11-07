@@ -9,6 +9,8 @@ const publicPaths = new Set([
   '/api/auth/register',
   '/api/auth/logout',
   '/api/health',
+  '/prueba-correo',
+  '/api/correo/prueba',
 ]);
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
@@ -39,6 +41,18 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   if (user) return response;
 
   if (pathname.startsWith('/api/')) {
+    if (pathname.startsWith('/api/rendimiento/')) {
+      const unauthorized = NextResponse.json({
+        ok: false,
+        error: {
+          codigo: 'NO_AUTORIZADO',
+          mensaje: 'Debe iniciar sesión.',
+          detalles: null,
+        },
+      }, { status: 401, headers: { 'Cache-Control': 'no-store' } });
+      response.cookies.getAll().forEach((cookie) => unauthorized.cookies.set(cookie));
+      return unauthorized;
+    }
     const unauthorized = NextResponse.json({ success: false, error: 'Autenticación requerida.', code: 'UNAUTHORIZED' }, { status: 401 });
     response.cookies.getAll().forEach((cookie) => unauthorized.cookies.set(cookie));
     return unauthorized;

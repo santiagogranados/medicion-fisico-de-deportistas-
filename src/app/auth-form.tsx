@@ -20,33 +20,40 @@ export function AuthForm({ mode }: AuthFormProps) {
     setNotice('');
     setIsSubmitting(true);
 
-    const formData = new FormData(event.currentTarget);
-    const response = await fetch(`/api/auth/${mode}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: formData.get('email'),
-        password: formData.get('password'),
-        ...(isRegister ? { displayName: formData.get('displayName') } : {}),
-      }),
-    });
-    const result = (await response.json()) as { error?: string; needsEmailConfirmation?: boolean };
-    setIsSubmitting(false);
+    try {
+      const formData = new FormData(event.currentTarget);
+      const response = await fetch(`/api/auth/${mode}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.get('email'),
+          password: formData.get('password'),
+          ...(isRegister ? { displayName: formData.get('displayName') } : {}),
+        }),
+      });
+      const result = (await response.json()) as { error?: string; needsEmailConfirmation?: boolean };
 
-    if (!response.ok) {
-      setError(result.error ?? 'No se pudo completar la solicitud.');
-      return;
+      if (!response.ok) {
+        setError(result.error ?? 'No se pudo completar la solicitud.');
+        return;
+      }
+
+      if (result.needsEmailConfirmation) {
+        setNotice('Cuenta creada. Confirma tu correo electrónico y luego inicia sesión.');
+        return;
+      }
+
+      const requestedPath = new URLSearchParams(window.location.search).get('next');
+      const destination = requestedPath?.startsWith('/') && !requestedPath.startsWith('//') ? requestedPath : '/';
+      router.replace(destination);
+      router.refresh();
+    } catch (cause) {
+      setError(cause instanceof SyntaxError
+        ? 'El servidor devolvió una respuesta inválida. Inténtalo de nuevo.'
+        : 'No se pudo conectar con el servidor. Comprueba tu conexión e inténtalo de nuevo.');
+    } finally {
+      setIsSubmitting(false);
     }
-
-    if (result.needsEmailConfirmation) {
-      setNotice('Cuenta creada. Confirma tu correo electrónico y luego inicia sesión.');
-      return;
-    }
-
-    const requestedPath = new URLSearchParams(window.location.search).get('next');
-    const destination = requestedPath?.startsWith('/') && !requestedPath.startsWith('//') ? requestedPath : '/';
-    router.replace(destination);
-    router.refresh();
   }
 
   return (
