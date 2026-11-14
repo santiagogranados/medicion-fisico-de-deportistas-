@@ -48,4 +48,14 @@ describe('/api/auth/recovery', () => {
 
     expect(response.status).toBe(502);
   });
+
+  it('informa claramente cuando Supabase limita temporalmente los correos', async () => {
+    resetPasswordForEmail.mockResolvedValue({ error: { status: 429 } });
+
+    const response = await POST(createRequest({ email: 'santiago@example.com' }));
+    const result = await response.json();
+
+    expect(response.status).toBe(429);
+    expect(result.error).toContain('varios enlaces recientemente');
+  });
 });

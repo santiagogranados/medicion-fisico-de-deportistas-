@@ -26,6 +26,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     });
 
     if (error) {
+      if (error.status === 429) {
+        return NextResponse.json({
+          success: false,
+          error: 'Se solicitaron varios enlaces recientemente. Espera un poco antes de volver a intentarlo y revisa también tu correo y la carpeta de spam.',
+        }, { status: 429 });
+      }
       return NextResponse.json({ success: false, error: 'No se pudo solicitar el restablecimiento. Inténtalo de nuevo más tarde.' }, { status: 502 });
     }
 
