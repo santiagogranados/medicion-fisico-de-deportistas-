@@ -88,6 +88,11 @@ export function AuthForm({ mode }: AuthFormProps) {
             {isRegister ? '¿Ya tienes cuenta?' : '¿Primera vez aquí?'}{' '}
             <Link href={isRegister ? '/login' : '/register'}>{isRegister ? 'Inicia sesión' : 'Crear cuenta'}</Link>
           </p>
+          {!isRegister && (
+            <p className="auth-switch">
+              <Link href="/recuperar-contrasena">¿Olvidaste tu contraseña?</Link>
+            </p>
+          )}
         </section>
       </div>
     </main>

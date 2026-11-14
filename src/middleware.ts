@@ -5,8 +5,12 @@ import { getSupabasePublicConfig } from '@/lib/supabase/config';
 const publicPaths = new Set([
   '/login',
   '/register',
+  '/recuperar-contrasena',
+  '/actualizar-contrasena',
+  '/auth/confirm',
   '/api/auth/login',
   '/api/auth/register',
+  '/api/auth/recovery',
   '/api/auth/logout',
   '/api/health',
   '/prueba-correo',

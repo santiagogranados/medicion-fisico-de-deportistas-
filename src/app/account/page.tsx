@@ -5,8 +5,11 @@ import Link from 'next/link';
 
 export default function AccountPage() {
   const [saving, setSaving] = useState(false);
+  const [savingEmail, setSavingEmail] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [emailNotice, setEmailNotice] = useState('');
 
   async function changePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -42,6 +45,39 @@ export default function AccountPage() {
     }
   }
 
+  async function changeEmail(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (savingEmail) return;
+    setEmailError('');
+    setEmailNotice('');
+    setSavingEmail(true);
+
+    const formElement = event.currentTarget;
+    const formData = new FormData(formElement);
+    try {
+      const response = await fetch('/api/auth/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.get('email'),
+          currentPassword: formData.get('currentPassword'),
+        }),
+      });
+      const result = (await response.json()) as { error?: string; message?: string };
+      if (!response.ok) {
+        setEmailError(result.error ?? 'No se pudo solicitar el cambio de correo.');
+        return;
+      }
+
+      formElement.reset();
+      setEmailNotice(result.message ?? 'Revisa tu nuevo correo para confirmar el cambio.');
+    } catch {
+      setEmailError('No se pudo contactar al servidor. Inténtalo de nuevo.');
+    } finally {
+      setSavingEmail(false);
+    }
+  }
+
   async function logOut() {
     await fetch('/api/auth/logout', { method: 'POST' });
     window.location.assign('/login');
@@ -74,8 +110,19 @@ export default function AccountPage() {
           <div className="user-form-actions"><small>Usa al menos 12 caracteres.</small><button type="submit" disabled={saving}>{saving ? 'Actualizando...' : 'Cambiar contraseña'}</button></div>
         </form>
 
+        <form className="user-create-form account-form" onSubmit={changeEmail}>
+          <div className="user-form-heading"><div><p className="eyebrow">CORREO ELECTRÓNICO</p><h2>Cambiar correo de acceso</h2></div></div>
+          <div className="user-form-grid account-form-grid">
+            <label>Nuevo correo<input name="email" type="email" autoComplete="email" required maxLength={254} /></label>
+            <label>Contraseña actual<input name="currentPassword" type="password" autoComplete="current-password" required maxLength={128} /></label>
+          </div>
+          <div className="user-form-actions"><small>El cambio solo se aplicará después de confirmar el mensaje enviado a tu nuevo correo.</small><button type="submit" disabled={savingEmail}>{savingEmail ? 'Enviando...' : 'Solicitar cambio'}</button></div>
+        </form>
+
         {error && <p className="auth-error user-feedback" role="alert">{error}</p>}
         {notice && <p className="auth-notice user-feedback" role="status">{notice}</p>}
+        {emailError && <p className="auth-error user-feedback" role="alert">{emailError}</p>}
+        {emailNotice && <p className="auth-notice user-feedback" role="status">{emailNotice}</p>}
       </section>
       <footer><span>MEDIFIS / CONTROL FÍSICO</span><span>Seguridad de la cuenta</span></footer>
     </main>
